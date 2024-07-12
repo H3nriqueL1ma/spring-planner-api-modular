@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmação de Viagem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .email-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h2 {
+            color: black;
+        }
+        h2 span {
+            color: #BEF264;
+        }
+        #text-div {
+            display: flex;
+            justify-content: center;
+        }
+        #text-div #text {
+            font-size: 20px;
+            text-align: center;
+            width: 400px;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .footer img {
+            height: 371px;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <section>
+        <h2>Olá, <span th:text="${name}">name</span>!</h2>
+        <p>Sua viagem foi confirmada com sucesso!</p><br>
+        <div id="text-div"><p id="text">Obrigado por escolher nossos serviços. Desejamos uma excelente viagem!</p></div>
+    </section>
+    <div class="footer">
+        <img src="images/logo-planner.png" data-th-src="|cid:springLogo|" alt="Logo Portfolio"/>
+    </div>
+</div>
+</body>
+</html>

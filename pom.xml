@@ -36,6 +36,7 @@
 
 	<modules>
 		<module>core</module>
+		<module>mailsender</module>
 		<module>api</module>
 	</modules>
 
@@ -44,6 +45,11 @@
 			<dependency>
 				<groupId>net.azurewebsites.planner</groupId>
 				<artifactId>core</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.azurewebsites.planner</groupId>
+				<artifactId>mailsender</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 		</dependencies>

@@ -9,5 +9,4 @@ open module core {
 
     exports net.azurewebsites.planner.core.Models;
     exports net.azurewebsites.planner.core.Repositories;
-    exports net.azurewebsites.planner.core.Services;
 }

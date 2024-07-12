@@ -47,6 +47,10 @@ public class TripMigrationModel {
     @Column(name = "is_confirmed")
     private Boolean isConfirmed;
 
+    @Column(name = "confirmation_token", unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID confirmationToken;
+
     public TripMigrationModel(TripPayloadModel data) {
         this.destination = data.destination();
         this.startsAt = LocalDateTime.parse(data.starts_at(), DateTimeFormatter.ISO_DATE_TIME);

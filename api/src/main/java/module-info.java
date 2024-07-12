@@ -7,4 +7,5 @@ open module api {
     requires spring.beans;
     requires spring.data.jpa;
     requires spring.core;
+    requires java.dotenv;
 }
