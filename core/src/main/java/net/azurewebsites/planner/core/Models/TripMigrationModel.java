@@ -48,7 +48,6 @@ public class TripMigrationModel {
     private Boolean isConfirmed;
 
     @Column(name = "confirmation_token", unique = true)
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID confirmationToken;
 
     public TripMigrationModel(TripPayloadModel data) {
@@ -59,5 +58,6 @@ public class TripMigrationModel {
         this.ownerName = data.owner_name();
         this.ownerEmail = data.owner_email();
         this.isConfirmed = false;
+        this.confirmationToken = UUID.randomUUID();
     }
 }

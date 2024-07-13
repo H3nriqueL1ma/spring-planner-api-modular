@@ -8,4 +8,7 @@ open module api {
     requires spring.data.jpa;
     requires spring.core;
     requires java.dotenv;
+    requires jakarta.mail;
+    requires thymeleaf;
+    requires spring.context.support;
 }
