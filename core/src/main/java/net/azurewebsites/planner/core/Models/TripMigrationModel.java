@@ -50,6 +50,12 @@ public class TripMigrationModel {
     @Column(name = "confirmation_token", unique = true)
     private UUID confirmationToken;
 
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParticipantModel> participants;
+
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ActivityModel> activities;
+
     public TripMigrationModel(TripPayloadModel data) {
         this.destination = data.destination();
         this.startsAt = LocalDateTime.parse(data.starts_at(), DateTimeFormatter.ISO_DATE_TIME);

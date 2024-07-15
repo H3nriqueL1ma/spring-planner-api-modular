@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    restart: on-failure
+    ports:
+      - "8030:8030"
+    environment:
+      POSTGRES_USERNAME: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    env_file:
+      - .env

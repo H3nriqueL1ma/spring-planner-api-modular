@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Confirmação de Viagem</title>
+    <title>Presença Confirmada</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,19 +25,14 @@
         h2 span {
             color: #BEF264;
         }
-        #button-div {
-            text-align: center;
+        #text-div {
+            display: flex;
+            justify-content: center;
         }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: black;
-            font-weight: 500;
-            background-color: #BEF264;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 20px;
+        #text-div #text {
+            font-size: 20px;
+            text-align: center;
+            width: 400px;
         }
         .footer {
             margin-top: 20px;
@@ -52,15 +47,8 @@
 <div class="email-container">
     <section>
         <h2>Olá, <span th:text="${name}">name</span>!</h2>
-        <p>Acabamos de receber seu pedido de viagem!</p><br>
-        <h4>Detalhes da Viagem:</h4>
-        <p><strong>Destino:</strong> <span th:text="${destination}">destination</span></p>
-        <p><strong>Data de Partida:</strong> <span th:text="${departureDate}">departureDate</span></p>
-        <p><strong>Data de Retorno:</strong> <span th:text="${returnDate}">returnDate</span></p>
-        <p>Obrigado por escolher nossos serviços. Desejamos uma excelente viagem!</p>
-        <div id="button-div">
-            <a id="confirm-button" th:href="@{|http://localhost:8080/trips/confirmed-page/${tripId}|}" class="button">Confirmar Viagem</a>
-        </div>
+        <p>Sua presença foi confirmada com sucesso!</p><br>
+        <div id="text-div"><p id="text">Obrigado por escolher nossos serviços. Desejamos uma excelente viagem!</p></div>
     </section>
     <div class="footer">
         <img src="images/logo-planner.png" data-th-src="|cid:springLogo|" alt="Logo Portfolio"/>

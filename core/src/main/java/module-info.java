@@ -6,6 +6,7 @@ open module core {
     requires spring.data.jpa;
     requires spring.context;
     requires org.hibernate.orm.core;
+    requires spring.core;
 
     exports net.azurewebsites.planner.core.Models;
     exports net.azurewebsites.planner.core.Repositories;

@@ -7,8 +7,10 @@ open module api {
     requires spring.beans;
     requires spring.data.jpa;
     requires spring.core;
-    requires java.dotenv;
     requires jakarta.mail;
     requires thymeleaf;
     requires spring.context.support;
+    requires spring.webmvc;
+    requires reactor.core;
+    requires spring.webflux;
 }

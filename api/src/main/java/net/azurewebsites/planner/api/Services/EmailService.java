@@ -41,6 +41,7 @@ public class EmailService {
         String returnDate = data.getEndsAt().getDayOfMonth() + "/" + data.getEndsAt().getMonthValue() + "/" + data.getEndsAt().getYear();
 
         context.setVariable("name", emailModel.getTripCreatorName());
+        context.setVariable("nameCreator", data.getOwnerName());
         context.setVariable("destination", data.getDestination());
         context.setVariable("departureDate", departureDate);
         context.setVariable("returnDate", returnDate);
