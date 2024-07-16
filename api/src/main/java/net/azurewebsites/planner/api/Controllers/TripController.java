@@ -2,6 +2,7 @@ package net.azurewebsites.planner.api.Controllers;
 
 import jakarta.mail.MessagingException;
 import net.azurewebsites.planner.api.Services.EmailService;
+import net.azurewebsites.planner.api.Services.EmailValidatorService;
 import net.azurewebsites.planner.core.Models.*;
 import net.azurewebsites.planner.core.Repositories.ActivityRepository;
 import net.azurewebsites.planner.core.Repositories.ParticipantRepository;
@@ -64,22 +65,26 @@ public class TripController {
     @PostMapping
     public ResponseEntity<Object> createTrip(@RequestBody TripPayloadModel request) {
         try {
-            TripMigrationModel newTrip = new TripMigrationModel(request);
+            if (EmailValidatorService.isValid(request.owner_email())) {
+                TripMigrationModel newTrip = new TripMigrationModel(request);
 
-            LocalDateTime startsDate = LocalDateTime.parse(request.starts_at(), DateTimeFormatter.ISO_DATE_TIME);
-            LocalDateTime endsDate = LocalDateTime.parse(request.ends_at(), DateTimeFormatter.ISO_DATE_TIME);
+                LocalDateTime startsDate = LocalDateTime.parse(request.starts_at(), DateTimeFormatter.ISO_DATE_TIME);
+                LocalDateTime endsDate = LocalDateTime.parse(request.ends_at(), DateTimeFormatter.ISO_DATE_TIME);
 
-            if (startsDate.isAfter(endsDate)) {
-                return ResponseEntity.badRequest().body("Error: Starts date after ends date!");
-            } else if (endsDate.isBefore(startsDate)) {
-                return ResponseEntity.badRequest().body("Error: Ends date before starts date!");
+                if (startsDate.isAfter(endsDate)) {
+                    return ResponseEntity.badRequest().body("Error: Starts date after ends date!");
+                } else if (endsDate.isBefore(startsDate)) {
+                    return ResponseEntity.badRequest().body("Error: Ends date before starts date!");
+                }
+
+                this.tripRepository.save(newTrip);
+
+                this.participantService.registerParticipantsToEvent(request.emails_to_invite(), newTrip);
+
+                return ResponseEntity.status(HttpStatus.OK).body(newTrip.getId());
             }
 
-            this.tripRepository.save(newTrip);
-
-            this.participantService.registerParticipantsToEvent(request.emails_to_invite(), newTrip);
-
-            return ResponseEntity.status(HttpStatus.OK).body(newTrip.getId());
+            return ResponseEntity.badRequest().body("Error: Email format or domain invalid!");
         } catch (Exception error) {
             throw new RuntimeException(error);
         }
@@ -190,24 +195,28 @@ public class TripController {
         List<ParticipantModel> participants = trip.getParticipants();
 
         if (request != null) {
-            Optional<ParticipantModel> existingParticipantOptional = participants.stream().filter(participant -> request.getEmail().equals(participant.getEmail())).findFirst();
+            if (EmailValidatorService.isValid(request.getEmail())) {
+                Optional<ParticipantModel> existingParticipantOptional = participants.stream().filter(participant -> request.getEmail().equals(participant.getEmail())).findFirst();
 
-            if (existingParticipantOptional.isPresent()) {
-                ParticipantModel existingParticipant = existingParticipantOptional.get();
+                if (existingParticipantOptional.isPresent()) {
+                    ParticipantModel existingParticipant = existingParticipantOptional.get();
 
-                existingParticipant.setName(request.getName());
-                existingParticipant.setIsConfirmed(true);
-                this.participantRepository.save(existingParticipant);
+                    existingParticipant.setName(request.getName());
+                    existingParticipant.setIsConfirmed(true);
+                    this.participantRepository.save(existingParticipant);
 
-                emailService.sendEmail(new EmailModel(existingParticipant.getName(), existingParticipant.getEmail()), trip, id, "Sua presença foi confirmada! Plann.er", "confirmed-participant-email");
+                    emailService.sendEmail(new EmailModel(existingParticipant.getName(), existingParticipant.getEmail()), trip, id, "Sua presença foi confirmada! Plann.er", "confirmed-participant-email");
 
-                return ResponseEntity.ok("Participant confirmed!");
-            } else {
-                return ResponseEntity.notFound().build();
+                    return ResponseEntity.ok("Participant confirmed!");
+                } else {
+                    return ResponseEntity.notFound().build();
+                }
             }
+
+            return ResponseEntity.badRequest().body("Error: Email format or domain invalid!");
         }
 
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body("Error: Request null!");
     }
 
     @GetMapping("/confirmed-page/{id}")
@@ -273,7 +282,7 @@ public class TripController {
                     return ResponseEntity.ok("Activity created!");
                 }
 
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest().body("Request null!");
             }
 
             return ResponseEntity.notFound().build();
