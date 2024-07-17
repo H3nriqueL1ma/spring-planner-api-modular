@@ -51,8 +51,8 @@ POST /trips
 ##### Response:
 
 - Response 200 - retornando Id da viagem, em formato UUID
-- Response 401 - Ao inserir data de início superior a data de fim, inserir data de fim anterior a data de início
-- Response 401 - Email do dono da viagem inválido
+- Response 400 - Ao inserir data de início superior a data de fim, inserir data de fim anterior a data de início
+- Response 400 - Email do dono da viagem inválido
 
 #
 
@@ -127,7 +127,7 @@ OBS: Cada parâmetro é opcional, então poderá atualizar qualquer um, seja doi
 ##### Response:
 
 - Response 200 - retornando Id da viagem, em formato UUID
-- Response 401 - Ao inserir data de início superior a data de fim ou inserir data de fim anterior a data de início
+- Response 400 - Ao inserir data de início superior a data de fim ou inserir data de fim anterior a data de início
 - Response 404 - Viagem não encontrada
 
 #
@@ -170,8 +170,8 @@ POST /trips/{id}/confirm?confirmer=true&participantReq=true
 - Response 200 - "To confirm..." - Confirmar viagem por email
 - Response 200 - "Trip confirmed!" - Viagem confirmada
 - Resoinse 200 - "Participant confirmed!" - Convidado confirmado 
-- Response 401 - Request nula (Caso participantReq estiver **true**)
-- Response 401 - Email do convidado inválido
+- Response 400 - Request nula (Caso participantReq estiver **true**)
+- Response 400 - Email do convidado inválido
 - Response 404 - Viagem não encontrada
 
 #
@@ -182,7 +182,7 @@ POST /trips/{id}/confirm?confirmer=true&participantReq=true
 GET /trips/{id}/participants
 ```
 
-**`id` ID da Viagem a ser consultada**
+**`id` ID da Viagem para consultar convidados**
 
 ##### Response:
 
@@ -213,3 +213,127 @@ GET /trips/{id}/participants
 ```http
 POST /trips/{id}/activities
 ```
+
+**`id` ID da Viagem para criar atividades**
+
+##### Request:
+
+| Body            | Tipo           | Descrição                                            |
+| :-------------- | :------------- | :--------------------------------------------------- |
+| `name`          | `string`       | **Obrigatório**. Nome da atividade                   |
+| `activity_date` | `string`       | **Obrigatório**. Dia da atividade (Ex: "2024-08-22") |
+| `activity_hour` | `string`       | **Obrigatório**. Hora da atividade (Ex: "10:30:00")  |
+
+##### Response:
+
+- Response 200
+- Response 400 - Data da atividade anterior a data da viagem ou data da atividade superior a data de fim viagem
+- Response 400 - Request nula
+- Response 404 - Viagem não encontrada
+
+#
+
+#### Ler Atividades
+
+```http
+GET /trips/{id}/activities
+```
+
+**`id` ID da Viagem para consultar atividades**
+
+##### Response:
+
+- Response 200 (application/json)
+- Response 404 - Viagem não encontrada
+
+  - Body
+    
+          [
+            {
+              "id": "4d5fd624-5346-473d-9d5a-c434e7bba23f",
+              "isCompleted": false,
+              "activityName": "Jogar tênis",
+              "activityDate": "2024-08-27",
+              "activityHour": "17:30:00"
+            },
+            {
+              "id": "4d5fd624-5346-473d-9d5a-c434e7dsa20f",
+              "isCompleted": true,
+              "activityName": "Ir à piscina",
+              "activityDate": "2024-08-27",
+              "activityHour": "18:00:00"
+            }
+          ]
+
+#
+
+#### Completar ou descompletar Atividade
+
+```http
+GET /trips/activities/{activityId}/complete
+```
+
+**`activityId` ID da atividade para completar ou descompletar**
+
+##### Filtros de buscas (Obrigatórios)
+
+| queryParams      |   Tipo    |                                                           Descrição |
+| :--------------- | :-------: | ------------------------------------------------------------------: |
+| `uncomplete`     | `boolean` | **false** - completar atividade / **true** - descompletar atividade |
+
+##### Response:
+
+- Response 200 - "Activity uncompleted!" - Atividade descompletada
+- Response 200 - "Activity completed!" - Atividade completada
+- Response 404 - Atividade não encontrada
+
+#
+
+#### Criar Link
+
+```http
+POST /trips/{id}/links
+```
+
+**`id` ID da viagem para criar link**
+
+##### Request:
+
+| Body         | Tipo           | Descrição                     |
+| :----------- | :------------- | :---------------------------- |
+| `title_link` | `string`       | **Obrigatório**. Nome do link |
+| `url`        | `string`       | **Obrigatório**. Url do link  |
+
+##### Response:
+
+- Response 200 - retornando Id do link, em formato UUID
+- Response 400 - Request nula
+- Response 400 - Url do link inválida
+- Response 404 - Viagem não encontrada
+
+#
+
+#### Ler Links
+
+```http
+GET /trips/{id}/links
+```
+
+**`id` ID da viagem para consultar links**
+
+##### Response:
+
+- Response 200 (application/json)
+- Response 404 - Viagem não encontrada
+
+  - Body
+    
+          [
+            {
+              "id": "4a5d6b07-6522-459b-a80c-e30b138277c1",
+              "titleLink": "Reserva AirBnB",
+              "url": "https://www.airbnb.com.br/104700012"
+            }
+          ]
+
+#
