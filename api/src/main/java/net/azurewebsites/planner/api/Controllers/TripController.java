@@ -3,13 +3,14 @@ package net.azurewebsites.planner.api.Controllers;
 import jakarta.mail.MessagingException;
 import net.azurewebsites.planner.api.Services.EmailService;
 import net.azurewebsites.planner.api.Services.EmailValidatorService;
+import net.azurewebsites.planner.api.Services.LinkValidatorService;
 import net.azurewebsites.planner.core.Models.*;
 import net.azurewebsites.planner.core.Repositories.ActivityRepository;
+import net.azurewebsites.planner.core.Repositories.LinkRepository;
 import net.azurewebsites.planner.core.Repositories.ParticipantRepository;
 import net.azurewebsites.planner.core.Repositories.TripRepository;
 import net.azurewebsites.planner.api.Services.ParticipantServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,6 @@ import reactor.core.publisher.Mono;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +44,7 @@ public class TripController {
     private final TemplateEngine templateEngine;
     private final WebClient.Builder webClientBuilder;
     private final ActivityRepository activityRepository;
+    private final LinkRepository linkRepository;
 
     @Autowired
     public TripController(TripRepository tripRepository,
@@ -52,7 +53,8 @@ public class TripController {
                           ParticipantRepository participantRepository,
                           TemplateEngine templateEngine,
                           WebClient.Builder webClientBuilder,
-                          ActivityRepository activityRepository) {
+                          ActivityRepository activityRepository,
+                          LinkRepository linkRepository) {
         this.tripRepository = tripRepository;
         this.emailService = emailService;
         this.participantService = participantService;
@@ -60,6 +62,7 @@ public class TripController {
         this.templateEngine = templateEngine;
         this.webClientBuilder = webClientBuilder;
         this.activityRepository = activityRepository;
+        this.linkRepository = linkRepository;
     }
 
     @PostMapping
@@ -282,7 +285,36 @@ public class TripController {
                     return ResponseEntity.ok("Activity created!");
                 }
 
-                return ResponseEntity.badRequest().body("Request null!");
+                return ResponseEntity.badRequest().body("Error: Request null!");
+            }
+
+            return ResponseEntity.notFound().build();
+        } catch (Exception error) {
+            throw new RuntimeException(error);
+        }
+    }
+
+    @GetMapping("/activities/{activityId}/complete")
+    public ResponseEntity<Object> completeActivity(@PathVariable UUID activityId, @RequestParam Boolean uncomplete) {
+        try {
+            Optional<ActivityModel> activityOptional = this.activityRepository.findById(activityId);
+
+            if (activityOptional.isPresent()) {
+                ActivityModel activity = activityOptional.get();
+
+                if (uncomplete) {
+                    activity.setIsCompleted(false);
+
+                    this.activityRepository.save(activity);
+
+                    return ResponseEntity.ok("Activity uncompleted!");
+                } else {
+                    activity.setIsCompleted(true);
+
+                    this.activityRepository.save(activity);
+
+                    return ResponseEntity.ok("Activity completed!");
+                }
             }
 
             return ResponseEntity.notFound().build();
@@ -302,6 +334,55 @@ public class TripController {
                 TripDataModel data = new TripDataModel(trip);
 
                 return ResponseEntity.ok(data.getActivities());
+            }
+
+            return ResponseEntity.notFound().build();
+        } catch (Exception error) {
+            throw new RuntimeException(error);
+        }
+    }
+
+    @PostMapping("/{id}/links")
+    public ResponseEntity<Object> createLink(@PathVariable UUID id, @RequestBody LinkPayloadModel request) {
+        try {
+            Optional<TripMigrationModel> tripOptional = this.tripRepository.findById(id);
+
+            if (tripOptional.isPresent()) {
+                if (request != null) {
+                    if (LinkValidatorService.isValidURL(request.url())) {
+                        TripMigrationModel trip = tripOptional.get();
+
+                        LinkModel newLink = new LinkModel(request, trip);
+                        newLink.setTitleLink(request.title_link());
+
+                        this.linkRepository.save(newLink);
+
+                        return ResponseEntity.ok(newLink.getId());
+                    }
+
+                    return ResponseEntity.badRequest().body("Error: Invalid link!");
+                }
+
+                return ResponseEntity.badRequest().body("Error: Request null!");
+            }
+
+            return ResponseEntity.notFound().build();
+        } catch (Exception error) {
+            throw new RuntimeException(error);
+        }
+    }
+
+    @GetMapping("/{id}/links")
+    public ResponseEntity<List<LinkDataModel>> getLinks(@PathVariable UUID id) {
+        try {
+            Optional<TripMigrationModel> tripOptional = this.tripRepository.findById(id);
+
+            if (tripOptional.isPresent()) {
+                TripMigrationModel trip = tripOptional.get();
+
+                TripDataModel data = new TripDataModel(trip);
+
+                return ResponseEntity.ok(data.getLinks());
             }
 
             return ResponseEntity.notFound().build();

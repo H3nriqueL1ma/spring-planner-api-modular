@@ -9,35 +9,31 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data
-@Entity(name = "participants")
+@Entity(name = "links")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParticipantModel {
+public class LinkModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @NotNull
-    @Column(name = "is_confirmed")
-    private Boolean isConfirmed;
+    @Column(name = "title_link")
+    private String titleLink;
 
     @NotNull
-    private String name;
-
-    @NotNull
-    @Column(unique = true)
-    private String email;
+    @Column(name = "url")
+    private String url;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "trip_id")
     private TripMigrationModel trip;
 
-    public ParticipantModel(String email, TripMigrationModel trip) {
-        this.email = email;
+    public LinkModel(LinkPayloadModel linkData, TripMigrationModel trip) {
+        this.titleLink = linkData.title_link();
+        this.url = linkData.url();
         this.trip = trip;
-        this.isConfirmed = false;
-        this.name = "";
     }
 }

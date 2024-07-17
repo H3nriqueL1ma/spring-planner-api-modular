@@ -1,6 +1,7 @@
 package net.azurewebsites.planner.core.Models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -55,6 +56,9 @@ public class TripMigrationModel {
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ActivityModel> activities;
+
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LinkModel> links;
 
     public TripMigrationModel(TripPayloadModel data) {
         this.destination = data.destination();

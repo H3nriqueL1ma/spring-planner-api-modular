@@ -18,6 +18,7 @@ public class TripDataModel {
     private LocalDateTime endsAt;
     private List<ParticipantDataModel> participants;
     private List<ActivityDataModel> activities;
+    private List<LinkDataModel> links;
 
     public TripDataModel(TripMigrationModel dataTrip) {
         this.tripId = dataTrip.getId();
@@ -29,5 +30,6 @@ public class TripDataModel {
         this.endsAt = dataTrip.getEndsAt();
         this.participants = dataTrip.getParticipants().stream().map(ParticipantDataModel::new).collect(Collectors.toList());
         this.activities = dataTrip.getActivities().stream().map(ActivityDataModel::new).collect(Collectors.toList());
+        this.links = dataTrip.getLinks().stream().map(LinkDataModel::new).collect(Collectors.toList());
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-//@EnableAsync
+@EnableAsync
 @EnableJpaRepositories(basePackages = "net.azurewebsites.planner")
 @EntityScan(basePackages = "net.azurewebsites.planner")
 public class ApiApplication {
