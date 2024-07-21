@@ -337,3 +337,31 @@ GET /trips/{id}/links
           ]
 
 #
+
+## Instalação (Recomendo o uso da IDE Intellij IDEA para execução do projeto. Já que a instalação pelo VS Code é um tanto complexa. Além de executar a instalação em um ambiente Ubuntu ou usar o WSL)
+
+1. Clone o repositório:
+   ```sh
+   git clone https://github.com/H3nriqueL1ma/spring-todolist-api.git
+    ```
+2. Configure um banco de dados PostgreSQL, ou qualquer banco de sua escolha, se atentando a mudar a dependência de Driver Postgres para um Driver do banco escolhido.
+3. Atualize o arquivo 'application.properties' com as configurações do seu banco de dados, e configurações do seu servidor SMTP.
+4. Instale as dependências:
+    ```sh
+    sudo apt install openjdk-21-jdk
+    ```
+    ```sh
+    sudo apt install maven
+    ```
+5. Monte o pacote:
+    ```sh
+    mvn clean package -DskipTests
+    ```
+7. Execute o arquivo .jar:
+    ```sh
+    java -jar target/todolist-api-0.0.1-SNAPSHOT.jar
+    ```
+    
+## Licença
+
+Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
