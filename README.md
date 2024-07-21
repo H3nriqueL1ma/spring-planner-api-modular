@@ -359,7 +359,7 @@ GET /trips/{id}/links
     ```
 7. Execute o arquivo .jar:
     ```sh
-    java -jar target/todolist-api-0.0.1-SNAPSHOT.jar
+    java -jar target/api-0.0.1-SNAPSHOT.jar
     ```
     
 ## Licença
